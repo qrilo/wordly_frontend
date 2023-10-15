@@ -34,6 +34,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Update appsettings.json version
+        uses: jossef/action-set-json-field@v2.1
+        with:
+          file: wordly-app/appsettings.json
+          field: backend_url
+          value: ${{ values.BACKEND_URL }}
       - name: Set up Node
         uses: actions/setup-node@v3
         with:

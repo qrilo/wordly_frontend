@@ -1,8 +1,9 @@
 import axios from 'axios';
 import tokenService from './services/tokenService';
+import appsettings from '../appsettings.json';
 
 const instance = axios.create({
-    baseURL: 'https://localhost:5001/api/v1',
+    baseURL: `${appsettings.backend_url}/v1`,
 });
 
 const sendPostRequest = async (url, model, isAnonymous = false) => {
