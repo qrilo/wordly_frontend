@@ -39,7 +39,7 @@ jobs:
         with:
           file: wordly-app/appsettings.json
           field: backend_url
-          value: ${{ values.BACKEND_URL }}
+          value: ${{ $variables.BACKEND_URL }}
       - name: Set up Node
         uses: actions/setup-node@v3
         with:
