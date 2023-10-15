@@ -1,0 +1,43 @@
+.container {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    margin: 0 25px;
+    max-width: 400px;
+    min-width: 400px;
+    width: 400px;
+}
+
+.error__container {
+    margin: 5px 0px;
+}
+
+.error_block {
+    margin-bottom: 15px;
+}
+
+input {
+    width: 100%;
+}
+
+.button__container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.field__error {
+    max-height: 18px;
+    height: 18px;
+    color: red;
+    margin: 2px 0px;
+}
+
+.link {
+    color: #6366F1;
+    cursor: pointer;
+
+    &:hover {
+        opacity: 0.3;
+    }
+}
