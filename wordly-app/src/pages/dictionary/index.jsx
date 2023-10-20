@@ -264,6 +264,10 @@ const DictionaryPage = () => {
         const response = await collectionService.addTermsToCollection(collectionId, model);
         if (response.isSuccessed) {
             toast.current.show({ severity: 'success', summary: 'Success', detail: 'Terms successfully added to the collection            ', life: 3000 });
+
+            setAddToCollection(prev => !prev);
+            setSelectAll(false);
+            setSelectedTerms([]);
         }
 
         setAddToCollectionLoading(prev => !prev);
