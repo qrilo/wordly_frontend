@@ -4,19 +4,14 @@ import { Menu } from 'primereact/menu';
 import styles from "./header.module.scss";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import authService from '../../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
     const [menuVisible, setMenuVisible] = useState(false);
     const menuRef = useRef();
+    const navigate = useNavigate();
 
     const items = [
-        {
-            label: 'Settings',
-            icon: 'pi pi-cog',
-            command: () => {
-
-            },
-        },
         {
             label: 'Sign out',
             icon: 'pi pi-sign-out',
@@ -56,11 +51,16 @@ const Header = () => {
             <div className={styles.right}>
                 <nav>
                     <ul>
-                        <li><a className={styles.navItem}>Dictionary</a></li>
+                        <li>
+                            <a className={styles.navItem} onClick={() => navigate('/collections')}>Collections</a>
+                        </li>
+                        <li>
+                            <a className={styles.navItem} onClick={() => navigate('/dictionary')}>Dictionary</a>
+                        </li>
                     </ul>
                 </nav>
                 <div className="avatar">
-                    <Avatar onClick={toggleMenu} label="A" className="p-overlay-badge" shape="circle" size="large" style={{ backgroundColor: '#4caf4f', color: '#ffffff' }}>
+                    <Avatar onClick={toggleMenu} icon="pi pi-user" className="p-overlay-badge" shape="circle" size="large" style={{ backgroundColor: '#4caf4f', color: '#ffffff' }}>
                     </Avatar>
                     <Menu
                         ref={menuRef}
