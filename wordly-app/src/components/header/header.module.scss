@@ -2,12 +2,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 10%;
+    padding: 0px 120px;
     background-color: #fff;
     color: white;
     border-bottom: 0.6px solid #edeff4;
     max-height: 60px;
-    height: 60px;
+    height: 65px;
 }
 
 .logo {
@@ -37,8 +37,9 @@
 .navItem {
     cursor: pointer;
     font-weight: 600;
-    font-size: 16px;
     color: #2e3856;
+    letter-spacing: normal;
+    line-height: 1.4285714285714286;
 
     &:hover {
         opacity: 0.4;

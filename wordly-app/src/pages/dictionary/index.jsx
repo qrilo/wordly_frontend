@@ -16,6 +16,9 @@ import { Image } from 'primereact/image';
 import { FileUpload } from 'primereact/fileupload';
 import { InputSwitch } from 'primereact/inputswitch';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
+import collectionService from '../../services/collectionService';
+import { AutoComplete } from 'primereact/autocomplete';
+import { Dropdown } from 'primereact/dropdown';
 
 const DictionaryPage = () => {
     const [addTermModal, setIsOpenCreateTermModal] = useState(false);
@@ -42,6 +45,11 @@ const DictionaryPage = () => {
         sortOrder: null,
     });
     const toast = useRef(null);
+
+    const [addToCollection, setAddToCollection] = useState(false);
+    const [collections, setCollections] = useState([]);
+    const [selectedCollection, setSelectedCollection] = useState(null);
+    const [addToCollectionLoading, setAddToCollectionLoading] = useState(false);
 
     useEffect(() => {
         loadLazyData();
@@ -240,11 +248,65 @@ const DictionaryPage = () => {
         setLoadingDeleteImage(prev => !prev);
     }
 
+    const addTermsToCollection = async () => {
+        if (selectedCollection === null) {
+            toast.current.show({ severity: 'error', summary: 'Error', detail: 'Select collection', life: 3000 });
+            return;
+        }
+
+        setAddToCollectionLoading(prev => !prev);
+
+        const collectionId = selectedCollection;
+        const model = {
+            ids: selectedTerms.map(term => term.id)
+        };
+
+        const response = await collectionService.addTermsToCollection(collectionId, model);
+        if (response.isSuccessed) {
+            toast.current.show({ severity: 'success', summary: 'Success', detail: 'Terms successfully added to the collection            ', life: 3000 });
+        }
+
+        setAddToCollectionLoading(prev => !prev);
+    }
+
+    const openAddTermsToCollectionModal = async () => {
+        setAddToCollection(prev => !prev);
+
+        const response = await collectionService.getCollectionsInfo();
+
+        if (response.isSuccessed) {
+            setCollections(response.data);
+        }
+    }
+
+    const collectionOptions = collections.map(collection => ({
+        label: collection.name,
+        value: collection.id
+    }));
+
+    const onCollectionChange = (e) => {
+        setSelectedCollection(e.value);
+    };
+
     return (
         <div className={styles.dictionary__container}>
             <Toast ref={toast} />
             <ConfirmPopup />
             <CreateTermModal open={addTermModal} onOpen={setIsOpenCreateTermModal} onCreate={setTerms} />
+
+            <Dialog
+                style={{ width: '40vw' }}
+                header='Collection'
+                visible={addToCollection}
+                draggable={false}
+                onHide={() => setAddToCollection(prev => !prev)}
+                footer={
+                    <Button label='Add terms' onClick={addTermsToCollection} loading={addToCollectionLoading} />
+                }>
+                <p>Select collection:</p>
+                <Dropdown className='w-full' value={selectedCollection} options={collectionOptions} onChange={onCollectionChange} />
+
+            </Dialog>
 
             {selectedTerm && <Dialog
                 className='mh-5'
@@ -365,12 +427,12 @@ const DictionaryPage = () => {
 
             <Header />
 
-            <div className={styles.dictionary__content}>
+            <div className="px-8 mt-2">
                 <div className={styles.dictionary__table}>
                     <div className='flex justify-content-between pb-3'>
                         {selectedTerms.length > 0 ? <div className='flex align-items-center'>
                             <span>{selectedTerms.length} items selected</span>
-                            <Button label="Add to collection" className='ml-3' />
+                            <Button label="Add to collection" className='ml-3' onClick={openAddTermsToCollectionModal} />
                             <Button label="Remove" severity="danger" className='ml-3' onClick={confirmRemove} />
                         </div> : <Button label="Add" icon="pi pi-plus" severity="success" onClick={() => setIsOpenCreateTermModal(prev => !prev)} />
                         }
@@ -396,7 +458,7 @@ const DictionaryPage = () => {
                             loading={loading} tableStyle={{ minWidth: '75rem' }}
                             selection={selectedTerms} onSelectionChange={onSelectionChange} selectAll={selectAll} onSelectAllChange={onSelectAllChange}>
                             <Column key="selection" selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-                            <Column sortable key="term" field="term" header="Term" body={termTemplate} />
+                            <Column key="term" field="term" header="Term" body={termTemplate} />
                             <Column key="definition" field="definition" header="Definition" />
                             <Column key="image" field="Image" header="Image" body={imageTemplate} />
                             <Column key="details" header="Details" body={detailButtonTemplate} />
