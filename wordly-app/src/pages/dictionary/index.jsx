@@ -15,9 +15,8 @@ import { TagsInput } from 'react-tag-input-component';
 import { Image } from 'primereact/image';
 import { FileUpload } from 'primereact/fileupload';
 import { InputSwitch } from 'primereact/inputswitch';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { Formik, Field, Form } from 'formik';
 import collectionService from '../../services/collectionService';
-import { AutoComplete } from 'primereact/autocomplete';
 import { Dropdown } from 'primereact/dropdown';
 
 const DictionaryPage = () => {
@@ -80,6 +79,7 @@ const DictionaryPage = () => {
 
         const page = event.page + 1;
         const pageSize = event.rows;
+        console.log(event);
 
         await getTerms(page, pageSize);
 
@@ -166,6 +166,14 @@ const DictionaryPage = () => {
         );
     }
 
+    const addedTemplate = (rowData) => {
+        return (
+            <div>
+                {new Date(rowData.createdAtUtc).toLocaleDateString()}
+            </div>
+        )
+    }
+
     const confirmRemove = (event) => {
         confirmPopup({
             target: event.currentTarget,
@@ -203,6 +211,7 @@ const DictionaryPage = () => {
             model.append('Tags', tag)
         });
         model.append('Image', editImage);
+        model.append('Description', values.description);
 
         const response = await termService.updateTerm(selectedTerm.id, model);
 
@@ -325,7 +334,8 @@ const DictionaryPage = () => {
                 <Formik
                     initialValues={{
                         term: selectedTerm.term,
-                        definition: selectedTerm.definition
+                        definition: selectedTerm.definition,
+                        description: selectedTerm.description
                     }}
                     validateOnChange={false}
                     validateOnBlur={false}
@@ -366,6 +376,21 @@ const DictionaryPage = () => {
                                                 rows={5}
                                                 cols={30}
                                                 placeholder='Definition'
+                                            />
+                                        )}
+                                    </Field>
+                                </div>
+                                <div className="card flex flex-column">
+                                    <p className='text-xl font-medium'>Description</p>
+                                    <Field name="description">
+                                        {({ field }) => (
+                                            <InputTextarea
+                                                {...field}
+                                                readOnly={!editIsEnable}
+                                                autoResize
+                                                rows={5}
+                                                cols={30}
+                                                placeholder='description'
                                             />
                                         )}
                                     </Field>
@@ -462,9 +487,10 @@ const DictionaryPage = () => {
                             loading={loading} tableStyle={{ minWidth: '75rem' }}
                             selection={selectedTerms} onSelectionChange={onSelectionChange} selectAll={selectAll} onSelectAllChange={onSelectAllChange}>
                             <Column key="selection" selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-                            <Column key="term" field="term" header="Term" body={termTemplate} />
+                            <Column sortable key="term" field="term" header="Term" body={termTemplate} />
                             <Column key="definition" field="definition" header="Definition" />
                             <Column key="image" field="Image" header="Image" body={imageTemplate} />
+                            <Column sortable key="added" field="Added" header="Added" body={addedTemplate} />
                             <Column key="details" header="Details" body={detailButtonTemplate} />
                         </DataTable>
                     </div>
