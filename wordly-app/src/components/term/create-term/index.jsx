@@ -50,6 +50,7 @@ const CreateTermModal = ({ open, onOpen, onCreate }) => {
         formik.values.definition = '';
         formik.values.tags = [];
         formik.values.image = null;
+        formik.values.description = '';
     }
 
     const createTerm = async (model) => {
@@ -62,6 +63,7 @@ const CreateTermModal = ({ open, onOpen, onCreate }) => {
             formData.append('Tags', tag)
         });
         formData.append('Image', model.image);
+        formData.append('Description', model.description);
 
         const response = await termService.createTerm(formData);
         if (response.isSuccessed) {
@@ -106,6 +108,18 @@ const CreateTermModal = ({ open, onOpen, onCreate }) => {
                             rows={5}
                             cols={30}
                             placeholder='Definition'
+                        />
+                    </div>
+                    <div className="card flex flex-column">
+                        <p className='text-xl font-medium'>Description</p>
+                        <InputTextarea
+                            name="description"
+                            onChange={formik.handleChange}
+                            value={formik.values.description}
+                            autoResize
+                            rows={5}
+                            cols={30}
+                            placeholder='Description'
                         />
                     </div>
                     <div className="card flex flex-column">
