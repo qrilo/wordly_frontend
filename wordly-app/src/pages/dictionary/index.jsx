@@ -4,7 +4,7 @@ import styles from './dictionary.module.scss'
 import { InputText } from 'primereact/inputtext';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, useEffect, useRef, useState } from 'react';
 import termService from '../../services/termService';
 import CreateTermModal from '../../components/term/create-term';
 import { Toast } from 'primereact/toast';
@@ -18,6 +18,7 @@ import { InputSwitch } from 'primereact/inputswitch';
 import { Formik, Field, Form } from 'formik';
 import collectionService from '../../services/collectionService';
 import { Dropdown } from 'primereact/dropdown';
+import { Checkbox } from 'primereact/checkbox';
 
 const DictionaryPage = () => {
     const [addTermModal, setIsOpenCreateTermModal] = useState(false);
@@ -36,13 +37,16 @@ const DictionaryPage = () => {
     const [terms, setTerms] = useState(null);
     const [selectAll, setSelectAll] = useState(false);
     const [selectedTerms, setSelectedTerms] = useState([]);
+
     const [lazyState, setlazyState] = useState({
         first: 0,
-        rows: 5,
-        page: 1,
+        rows: 25,
+        page: 0,
         sortField: null,
         sortOrder: null,
     });
+    const [page, setPage] = useState(0);
+
     const toast = useRef(null);
 
     const [addToCollection, setAddToCollection] = useState(false);
@@ -50,20 +54,74 @@ const DictionaryPage = () => {
     const [selectedCollection, setSelectedCollection] = useState(null);
     const [addToCollectionLoading, setAddToCollectionLoading] = useState(false);
 
+    const [filtersIsOpen, setFiltersIsOpen] = useState(false);
+    const searchPhraseRef = useRef();
+    const [termCheck, setTermCheck] = useState(true);
+    const [definitionCheck, setDefinitionCheck] = useState(false);
+    const [filtersLoading, setFiltersLoading] = useState(false);
+
     useEffect(() => {
-        loadLazyData();
+        getTerms();
     }, []);
 
-    const loadLazyData = async () => {
-        setLoading(true);
-        await getTerms(1, 50);
-        setLoading(false);
-    };
+    const parseSortDirection = (event) => {
+        if (event.sortOrder > 0) {
+            return 'asc'
+        }
 
-    const getTerms = async (page = 1, pageSize = 5) => {
+        return 'desc'
+    }
+
+
+    const getTerms = async (page = 1) => {
+        setLoading(true);
+
         const model = {
             page: page,
-            pageSize: pageSize
+            pageSize: lazyState.rows,
+            sortDirection: 'desc',
+        }
+
+        const response = await termService.getTerms(model);
+
+        if (response.isSuccessed) {
+            setTerms(response.data.items);
+            setTotalRecords(response.data.itemsTotalCount);
+        }
+
+        setLoading(false);
+    }
+
+    const onPage = async (event) => {
+        setSelectAll(false);
+        setSelectedTerms([]);
+        setPage(event.page);
+        setLoading(prev => !prev)
+
+        if (event.sortField !== null) {
+            const model = {
+                page: event.page + 1,
+                pageSize: lazyState.rows,
+                sortDirection: parseSortDirection(event),
+                sortBy: event.sortField
+            }
+
+            const response = await termService.getTerms(model);
+
+            if (response.isSuccessed) {
+                setTerms(response.data.items);
+                setTotalRecords(response.data.itemsTotalCount);
+            }
+
+            setlazyState(event);
+            setLoading(prev => !prev)
+            return;
+        }
+
+        const model = {
+            page: event.page + 1,
+            pageSize: lazyState.rows,
+            sortDirection: parseSortDirection(event),
         }
         const response = await termService.getTerms(model);
 
@@ -71,24 +129,28 @@ const DictionaryPage = () => {
             setTerms(response.data.items);
             setTotalRecords(response.data.itemsTotalCount);
         }
-    }
-
-    const onPage = async (event) => {
-        setSelectAll(false);
-        setSelectedTerms([]);
-
-        const page = event.page + 1;
-        const pageSize = event.rows;
-        console.log(event);
-
-        await getTerms(page, pageSize);
 
         setlazyState(event);
+        setLoading(prev => !prev)
     };
 
-    const onSort = (event) => {
-        console.log(event);
+    const onSort = async (event) => {
+        setLoading(prev => !prev)
+        const model = {
+            page: page + 1,
+            pageSize: lazyState.rows,
+            sortDirection: parseSortDirection(event),
+            sortBy: event.sortField
+        }
+        const response = await termService.getTerms(model);
+
+        if (response.isSuccessed) {
+            setTerms(response.data.items);
+            setTotalRecords(response.data.itemsTotalCount);
+        }
+
         setlazyState(event);
+        setLoading(prev => !prev)
     };
 
     const onSelectionChange = (event) => {
@@ -301,11 +363,89 @@ const DictionaryPage = () => {
         setSelectedCollection(e.value);
     };
 
+    const clearFilters = () => {
+        searchPhraseRef.current.value = '';
+        setTermCheck(false);
+        setDefinitionCheck(false);
+    }
+
+    const applyFilters = async () => {
+        setFiltersLoading(prev => !prev);
+        const searchPhrase = searchPhraseRef.current.value;
+
+        const model = {
+            searchPhrase: searchPhrase,
+            searchIn: parseSearchIn(),
+            page: 1,
+            pageSize: lazyState.rows
+        }
+
+        const response = await termService.getTerms(model);
+        if (response.isSuccessed) {
+            setTerms(response.data.items);
+            setTotalRecords(response.data.itemsTotalCount);
+        }
+
+        setFiltersLoading(prev => !prev);
+    }
+
+    const parseSearchIn = () => {
+        if (termCheck && definitionCheck) {
+            return 'all';
+        }
+
+        if (termCheck) {
+            return 'term';
+        }
+
+        return 'definition';
+    }
+
     return (
         <div className={styles.dictionary__container}>
             <Toast ref={toast} />
             <ConfirmPopup />
             <CreateTermModal open={addTermModal} onOpen={setIsOpenCreateTermModal} onCreate={setTerms} />
+
+            <Dialog
+                style={{ width: '40vw' }}
+                header='Filters'
+                visible={filtersIsOpen}
+                draggable={false}
+                onHide={() => setFiltersIsOpen(prev => !prev)}
+                footer={
+                    <div>
+                        <Button
+                            label='Clear'
+                            severity="secondary"
+                            icon='pi pi-filter-slash'
+                            onClick={clearFilters}
+                            loading={filtersLoading} />
+                        <Button
+                            label='Apply'
+                            icon='pi pi-filter'
+                            onClick={applyFilters}
+                            loading={filtersLoading} />
+                    </div>}>
+                <div>
+                    <div>
+                        <p className='font-semibold text-lg'>Search phrase</p>
+                        <InputText ref={searchPhraseRef} />
+                    </div>
+                    <div >
+                        <p className='font-semibold text-lg'>Search in</p>
+                        <div className='mb-2'>
+                            <Checkbox checked={termCheck} onChange={() => setTermCheck(prev => !prev)} />
+                            <label className='ml-2'>term</label>
+                        </div>
+                        <div className='mb-2'>
+                            <Checkbox checked={definitionCheck} onChange={() => setDefinitionCheck(prev => !prev)} />
+                            <label className='ml-2'>definition</label>
+                        </div>
+                    </div>
+                </div>
+
+            </Dialog>
 
             <Dialog
                 style={{ width: '40vw' }}
@@ -466,11 +606,11 @@ const DictionaryPage = () => {
                         </div> : <Button label="Add" icon="pi pi-plus" severity="success" onClick={() => setIsOpenCreateTermModal(prev => !prev)} />
                         }
                         <div>
-                            <span className="p-input-icon-left">
-                                <i className="pi pi-search" />
-                                <InputText placeholder="Search" />
-                            </span>
-                            <Button label='Search' className='ml-3' />
+                            <Button
+                                onClick={() => setFiltersIsOpen(prev => !prev)}
+                                label='Filters'
+                                className='ml-3'
+                                icon='pi pi-filter' />
                         </div>
                     </div>
                     <div className="card">
@@ -478,10 +618,9 @@ const DictionaryPage = () => {
                             value={terms}
                             lazy
                             selectionMode='checkbox'
-                            filterDisplay="row"
                             dataKey="id"
                             paginator
-                            rows={50}
+                            rows={lazyState.rows}
                             first={lazyState.first} totalRecords={totalRecords} onPage={onPage}
                             onSort={onSort} sortField={lazyState.sortField} sortOrder={lazyState.sortOrder}
                             loading={loading} tableStyle={{ minWidth: '75rem' }}
@@ -490,7 +629,7 @@ const DictionaryPage = () => {
                             <Column sortable key="term" field="term" header="Term" body={termTemplate} />
                             <Column key="definition" field="definition" header="Definition" />
                             <Column key="image" field="Image" header="Image" body={imageTemplate} />
-                            <Column sortable key="added" field="Added" header="Added" body={addedTemplate} />
+                            <Column sortable key="createdAtUtc" field="createdAtUtc" header="Added" body={addedTemplate} />
                             <Column key="details" header="Details" body={detailButtonTemplate} />
                         </DataTable>
                     </div>

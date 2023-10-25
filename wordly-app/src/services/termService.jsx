@@ -35,5 +35,5 @@ export default {
     createTerm,
     removeTerms,
     updateTerm,
-    removeImageTerm
+    removeImageTerm,
 }
