@@ -13,6 +13,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import collectionService from "../../services/collectionService";
 import TermCard from "../../components/termin-card";
+import { PageLoader } from "../../components/page-loader";
 
 const CollectionPage = () => {
     const { id } = useParams();
@@ -20,6 +21,7 @@ const CollectionPage = () => {
     const toast = useRef(null);
     const menuRef = useRef(null);
     const [selectedTerms, setSelectedTerms] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const [isOpenEdit, setIsOpenEdit] = useState(false);
     const [isEditLoading, setIsEditLoading] = useState(false);
@@ -35,6 +37,8 @@ const CollectionPage = () => {
         if (response.isSuccessed) {
             setCollection(response.data);
         }
+
+        setLoading(prev => !prev);
     }
 
     const deleteCollection = async () => {
@@ -135,13 +139,14 @@ const CollectionPage = () => {
 
     return (
         <div>
+            {loading && <PageLoader />}
             <Toast ref={toast} />
             <Menu model={items} popup ref={menuRef} id="popup_menu_left" />
 
             <Dialog
+                className={styles.modal__container}
                 header="Edit collection"
                 visible={isOpenEdit}
-                style={{ width: '40vw' }}
                 onHide={() => setIsOpenEdit((prev) => !prev)}
                 draggable={false}>
                 <Formik

@@ -29,3 +29,52 @@
     align-items: center;
     backdrop-filter: blur(2px)
 }
+
+.collections__container {
+    padding: 0 10rem;
+    margin-top: 0.5rem;
+}
+
+.search__button__container {
+    margin-left: 2rem;
+}
+
+.collections__action {
+    display: flex;
+    justify-content: space-between;
+}
+
+.search__cotainer {
+    display: flex;
+}
+
+.modal__container {
+    width: 40vw;
+}
+
+
+@media (min-width: 1024px) {
+    /* Стили для ноутбуков и десктопов */
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* Стили для планшетов */
+}
+
+@media (max-width: 767px) {
+    .collections__container {
+        padding: 0;
+    }
+
+    .collections__action {
+        display: block;
+    }
+
+    .search__cotainer {
+        margin-top: 1rem;
+    }
+
+    .modal__container {
+        width: auto;
+    }
+}
