@@ -19,6 +19,7 @@ import { Formik, Field, Form } from 'formik';
 import collectionService from '../../services/collectionService';
 import { Dropdown } from 'primereact/dropdown';
 import { Checkbox } from 'primereact/checkbox';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 const DictionaryPage = () => {
     const [addTermModal, setIsOpenCreateTermModal] = useState(false);
@@ -408,7 +409,7 @@ const DictionaryPage = () => {
             <CreateTermModal open={addTermModal} onOpen={setIsOpenCreateTermModal} onCreate={setTerms} />
 
             <Dialog
-                style={{ width: '40vw' }}
+                className={styles.modal__container}
                 header='Filters'
                 visible={filtersIsOpen}
                 draggable={false}
@@ -448,7 +449,7 @@ const DictionaryPage = () => {
             </Dialog>
 
             <Dialog
-                style={{ width: '40vw' }}
+                className={styles.modal__container}
                 header='Collection'
                 visible={addToCollection}
                 draggable={false}
@@ -462,7 +463,7 @@ const DictionaryPage = () => {
             </Dialog>
 
             {selectedTerm && <Dialog
-                className='mh-5'
+                className={styles.details__modal__container}
                 draggable={false}
                 header="Term details"
                 visible={openIsDetailTermModal}
@@ -482,7 +483,7 @@ const DictionaryPage = () => {
                     validate={validateEditForm}
                     onSubmit={updateTerm}>
                     <Form>
-                        <div className='flex'>
+                        <div className={styles.details__modal__content}>
                             <div>
                                 <div className='flex align-items-center'>
                                     <p className='mr-2 text-lg font-medium'>Edit</p>
@@ -550,7 +551,7 @@ const DictionaryPage = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className='flex flex-column ml-5'>
+                            <div className={styles.details__content__image}>
                                 {selectedTerm.imageUrl ?
                                     <Image src={selectedTerm.imageUrl} alt="Image" width="250" />
                                     :
@@ -596,22 +597,27 @@ const DictionaryPage = () => {
 
             <Header />
 
-            <div className="px-8 mt-2">
+            <div className={styles.dictionary__table__container}>
                 <div className={styles.dictionary__table}>
-                    <div className='flex justify-content-between pb-3'>
-                        {selectedTerms.length > 0 ? <div className='flex align-items-center'>
-                            <span>{selectedTerms.length} items selected</span>
-                            <Button label="Add to collection" className='ml-3' onClick={openAddTermsToCollectionModal} />
-                            <Button label="Remove" severity="danger" className='ml-3' onClick={confirmRemove} />
-                        </div> : <Button label="Add" icon="pi pi-plus" severity="success" onClick={() => setIsOpenCreateTermModal(prev => !prev)} />
+                    <div className='pb-3'>
+                        {selectedTerms.length > 0 &&
+                            <div className={styles.selected__container}>
+                                <span className='mr-2'>{selectedTerms.length} items selected</span>
+                                <div className={styles.selected__buttons}>
+                                    <Button label="Add to collection" onClick={openAddTermsToCollectionModal} />
+                                    <Button label="Remove" severity="danger" className='ml-3' onClick={confirmRemove} />
+                                </div>
+                            </div>
                         }
-                        <div>
+
+                        {selectedTerms.length <= 0 && <div className='flex justify-content-between '>
+                            <Button label="Add" icon="pi pi-plus" severity="success" onClick={() => setIsOpenCreateTermModal(prev => !prev)} />
                             <Button
                                 onClick={() => setFiltersIsOpen(prev => !prev)}
                                 label='Filters'
                                 className='ml-3'
                                 icon='pi pi-filter' />
-                        </div>
+                        </div>}
                     </div>
                     <div className="card">
                         <DataTable

@@ -13,6 +13,20 @@ const Header = () => {
 
     const items = [
         {
+            label: 'Collections',
+            icon: 'pi pi-clone',
+            command: () => {
+                navigate('/collections');
+            }
+        },
+        {
+            label: 'Dictionary',
+            icon: 'pi pi-book',
+            command: () => {
+                navigate('/dictionary');
+            }
+        },
+        {
             label: 'Sign out',
             icon: 'pi pi-sign-out',
             command: () => {
@@ -49,7 +63,7 @@ const Header = () => {
             <ConfirmDialog />
             <div className={styles.logo}>Wordy</div>
             <div className={styles.right}>
-                <nav>
+                <nav className={styles.nav}>
                     <ul>
                         <li>
                             <a className={styles.navItem} onClick={() => navigate('/collections')}>Collections</a>

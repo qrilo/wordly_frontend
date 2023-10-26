@@ -10,7 +10,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { Toast } from 'primereact/toast';
 import { Formik, Form, Field } from 'formik';
 import collectionService from "../../services/collectionService";
-import { ProgressSpinner } from 'primereact/progressspinner';
+import { Loader } from '../../components/loader';
 
 const CollectionsPage = () => {
     const [first, setFirst] = useState(1); // active page
@@ -119,9 +119,9 @@ const CollectionsPage = () => {
             <Toast ref={toast} />
             <Header />
             <Dialog
+                className={styles.modal__container}
                 header="Create new collection"
                 visible={isOpenAddCollection}
-                style={{ width: '40vw' }}
                 onHide={() => setIsOpenAddCollection((prev) => !prev)}
                 draggable={false}>
                 <Formik
@@ -151,17 +151,17 @@ const CollectionsPage = () => {
                 </Formik>
             </Dialog>
 
-            <div className="px-8 mt-2">
+            <div className={styles.collections__container}>
                 <div className="p-3">
-                    <div className="flex justify-content-between ">
+                    <div className={styles.collections__action}>
                         <Button
                             label="Create"
                             icon="pi pi-plus"
                             severity="success"
                             onClick={() => setIsOpenAddCollection(prev => !prev)} />
-                        <div className="flex">
+                        <div className={styles.search__cotainer}>
                             <InputText placeholder="Search" ref={searchRef} />
-                            <div className="ml-5">
+                            <div className={styles.search__button__container}>
                                 <Button label="Search" onClick={searchCollection} />
                             </div>
                         </div>
@@ -175,7 +175,7 @@ const CollectionsPage = () => {
                         {loading &&
                             <div className={styles.cards__loading}>
                                 <div className={styles.loading__inner}>
-                                    <ProgressSpinner style={{ width: '50px', height: '50px', }} strokeWidth="5" animationDuration="1s" />
+                                    <Loader />
                                 </div>
                             </div>}
                         {collections.map((collection, index) => {

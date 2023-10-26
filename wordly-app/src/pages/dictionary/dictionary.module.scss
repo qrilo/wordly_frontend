@@ -11,35 +11,85 @@
     box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
+.dictionary__table__container {
+    padding: 0 10rem;
+    margin-top: 0.5rem;
+}
+
 .file__upload {
     span {
         width: 100%;
     }
 }
 
-@media screen and (min-width: 320px) {}
+.modal__container {
+    width: 40vw;
+    min-width: 255px;
+}
 
-@media screen and (min-width: 480px) {}
+.details__modal__container {
+    width: auto;
+    margin: 0 0.5rem;
+}
 
-@media screen and (min-width: 600px) {}
+.details__modal__content {
+    display: flex;
+}
 
-@media screen and (min-width: 768px) {
-    .dictionary__content {
-        padding: 0px 0%;
-        margin-top: 10px;
+.details__content__image {
+    margin-left: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.selected__container {
+    display: flex;
+    align-items: center;
+}
+
+.selected__buttons {
+    display: flex;
+    align-items: center;
+}
+
+@media (min-width: 1024px) {
+    /* Стили для ноутбуков и десктопов */
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .dictionary__table__container {
+        padding: 20px;
     }
 }
 
-@media screen and (min-width: 900px) {
-    .dictionary__content {
-        padding: 0px 2%;
-        margin-top: 10px;
+@media (max-width: 767px) {
+    .dictionary__table__container {
+        padding: 0;
     }
-}
 
-@media screen and (min-width: 1024px) {
-    .dictionary__content {
-        padding: 0px 5%;
-        margin-top: 10px;
+    .modal__container {
+        width: auto;
+    }
+
+    .details__modal__container {
+        width: 100%;
+    }
+
+    .details__modal__content {
+        display: block;
+    }
+
+    .details__content__image {
+        margin-left: 0;
+        margin-top: 2rem;
+    }
+
+    .selected__container {
+        flex-direction: column;
+        align-items: start;
+    }
+
+    .selected__buttons {
+        margin-top: 0.5rem;
     }
 }
