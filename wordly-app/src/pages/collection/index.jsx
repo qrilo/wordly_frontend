@@ -205,7 +205,7 @@ const CollectionPage = () => {
 
                 <div className="py-2 flex justify-content-between">
                     <div className="flex">
-                        <Button label="Flashcards" className="mr-2" />
+                        <Button label="Flashcards" className="mr-2" onClick={() => navigate(`/flashcards/${collection.id}`)} />
                         <Button label="Learn" />
                     </div>
                     {selectedTerms.length > 0 &&
