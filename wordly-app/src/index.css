@@ -14,3 +14,7 @@ html {
 #root {
     height: 100vh;
 }
+
+::selection {
+    background: #DBDFFF;
+}
