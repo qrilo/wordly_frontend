@@ -137,18 +137,20 @@ const FlashcardPage = () => {
                                 <div className={styles.result__block}>
                                     <h2>Choose your next action</h2>
                                     <div className={styles.result__info}>
-                                        <div className={styles.button__action}>
+                                        <div className={styles.button__action} onClick={reload}>
                                             <i className='pi pi-replay' style={{ color: '#59E8B5', fontSize: '32px' }}></i>
-                                            <div className='flex-1 ml-2' onClick={reload}>Repeat again</div>
+                                            <div className='flex-1 ml-2' >Repeat again</div>
                                             <i className='pi pi-angle-right' ></i>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <h2 style={{ color: '#586384' }}>Unknown</h2>
-                        </div>
+                        {cancel.length > 0 &&
+                            < div >
+                                <h2 style={{ color: '#586384' }}>Unknown</h2>
+                            </div>
+                        }
                         <div className='flex flex-column gap-2 my-4'>
                             {cancel.map((item, key) => {
                                 return <Card term={item} key={key} />
@@ -200,7 +202,7 @@ const FlashcardPage = () => {
                     </div>
                 }
             </div>
-        </div>
+        </div >
     );
 }
 
