@@ -85,6 +85,8 @@ const FlashcardPage = () => {
         setCount(1);
         setCurrentTerm(collection.terms[0]);
         setShowResult(false);
+        setCancel([]);
+        setSuccess([]);
     }
 
     return (
