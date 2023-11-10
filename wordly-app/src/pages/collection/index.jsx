@@ -287,10 +287,10 @@ const CollectionPage = () => {
                 </div>
 
                 <div className="py-2 flex justify-content-between">
-                    <div className="flex">
+                    {(collection.terms && collection.terms.length) ? <div className="flex">
                         <Button label="Flashcards" className="mr-2" onClick={() => navigate(`/flashcards/${collection.id}`)} />
                         <Button label="Learn" onClick={() => setIsOpenLearn(prev => !prev)} />
-                    </div>
+                    </div> : <h2 className="text-500 font-normal">The collection is empty</h2>}
                     {selectedTerms.length > 0 &&
                         <div className="flex align-items-center">
                             <span className="mr-2">{selectedTerms.length} items selected</span>
