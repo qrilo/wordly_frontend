@@ -41,36 +41,57 @@ const LearnPage = () => {
         }
     }
 
-    const SingleCard = () => {
+    const submitSingleWritten = async (answer) => {
+        setLoading(prev => !prev);
 
-        const handleSingleAnswer = async (answer) => {
-            const model = {
-                id: currentQuestion.single.id,
-                answer: answer
-            }
-            setAnswers(prev => [...prev, model]);
+        const model = {
+            answers: answers
+        };
 
-            increment();
-            setCurrentQuestion(test[count]);
+        model.answers.push(answer);
 
-            if (count == test.length) {
-                setLoading(prev => !prev);
-
-                const model = {
-                    answers: answers
-                };
-
-                const response = await collectionService.submitTest(id, model);
-                if (response.isSuccessed) {
-                    setShowResult(prev => !prev);
-                    setTestResult(response.data);
-                }
-
-                setLoading(prev => !prev);
-                return;
-            }
+        const response = await collectionService.submitTest(id, model);
+        if (response.isSuccessed) {
+            setShowResult(prev => !prev);
+            setTestResult(response.data);
         }
 
+        setLoading(prev => !prev);
+    }
+
+    const handleSingleAnswer = async (answer) => {
+        const model = {
+            id: currentQuestion.single.id,
+            answer: answer
+        }
+        setAnswers(prev => [...prev, model]);
+
+        increment();
+        setCurrentQuestion(test[count]);
+
+        if (count == test.length) {
+            await submitSingleWritten(model);
+            return;
+        }
+    }
+
+    const handleWrittenAnswer = async () => {
+        const model = {
+            id: currentQuestion.written.id,
+            answer: inputRef.current.value
+        }
+        setAnswers(prev => [...prev, model])
+
+        increment();
+        setCurrentQuestion(test[count]);
+
+        if (count == test.length) {
+            await submitSingleWritten(model);
+            return;
+        }
+    }
+
+    const SingleCard = () => {
         return (
             <div className={styles.content}>
                 <div className={styles.question__container}>
@@ -97,35 +118,6 @@ const LearnPage = () => {
     }
 
     const WrittenCard = () => {
-
-        const handleWrittenAnswer = async () => {
-            const model = {
-                id: currentQuestion.written.id,
-                answer: inputRef.current.value
-            }
-            setAnswers(prev => [...prev, model])
-
-            increment();
-            setCurrentQuestion(test[count]);
-
-            if (count == test.length) {
-                setLoading(prev => !prev);
-
-                const model = {
-                    answers: answers
-                };
-
-                const response = await collectionService.submitTest(id, model);
-                if (response.isSuccessed) {
-                    setShowResult(prev => !prev);
-                    setTestResult(response.data);
-                }
-
-                setLoading(prev => !prev);
-                return;
-            }
-        }
-
         return (
             <div className={styles.content}>
                 <div className={styles.question__container}>
@@ -146,7 +138,7 @@ const LearnPage = () => {
                         </div>
                         <InputText ref={inputRef} />
                         <div className="mt-4 flex justify-content-end">
-                            <Button label="Next" onClick={handleWrittenAnswer} />
+                            <Button label={count == test.length ? 'Finish' : 'Next'} onClick={handleWrittenAnswer} />
                         </div>
                     </div>
                 </div>

@@ -1,12 +1,8 @@
-import { useEffect } from 'react';
 import styles from './learn-result.module.scss';
 import { Knob } from 'primereact/knob';
 import LearnTermCard from '../learn-term-card';
 
 const LearnResult = ({ percent = '', knownTotal, unknownTotal, onClick, unknownTerms }) => {
-    console.log(unknownTerms);
-    useEffect(() => { }, [])
-
     return (
         <div>
             <h1>Congratulations! You repeated all the cards.</h1>

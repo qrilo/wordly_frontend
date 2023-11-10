@@ -61,7 +61,6 @@ const getTest = async (id, model) => {
 }
 
 const submitTest = async (id, model) => {
-    console.log(model);
     const response = await api.sendPostRequest(`/collections/${id}/test`, model);
 
     return response;
