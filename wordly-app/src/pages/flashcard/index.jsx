@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react';
 import collectionService from '../../services/collectionService';
 import { PageLoader } from '../../components/page-loader';
 import { Knob } from 'primereact/knob';
+import LearnTermCard from '../../components/learn-term-card';
+import LearnContainer from '../../components/learn-conrainer';
+import LearnResult from '../../components/learn-result';
 
 const FlashcardPage = () => {
     const { id } = useParams();
@@ -107,58 +110,14 @@ const FlashcardPage = () => {
                     </div>
                 </div>
             </div>
-            <div className={styles.content}>
-
+            <LearnContainer>
                 {showResult ?
-                    <div>
-                        <h1>Congratulations! You repeated all the cards.</h1>
-                        <div className={styles.result}>
-                            <div className={styles.left}>
-                                <div className={styles.result__block}>
-                                    <h2>Your result</h2>
-                                    <div className={styles.result__info}>
-                                        <div>
-                                            <Knob
-                                                size={100}
-                                                value={countPercent()} />
-                                        </div>
-                                        <div className={styles.result__stat}>
-                                            <div className={styles.result__learned__box}>
-                                                <div>Known</div>
-                                                <div>{success.length}</div>
-                                            </div>
-                                            <div className={styles.result__need__learned__box}>
-                                                <div>Unknown</div>
-                                                <div>{cancel.length}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className={styles.right}>
-                                <div className={styles.result__block}>
-                                    <h2>Choose your next action</h2>
-                                    <div className={styles.result__info}>
-                                        <div className={styles.button__action} onClick={reload}>
-                                            <i className='pi pi-replay' style={{ color: '#59E8B5', fontSize: '32px' }}></i>
-                                            <div className='flex-1 ml-2' >Repeat again</div>
-                                            <i className='pi pi-angle-right' ></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {cancel.length > 0 &&
-                            < div >
-                                <h2 style={{ color: '#586384' }}>Unknown</h2>
-                            </div>
-                        }
-                        <div className='flex flex-column gap-2 my-4'>
-                            {cancel.map((item, key) => {
-                                return <Card term={item} key={key} />
-                            })}
-                        </div>
-                    </div>
+                    <LearnResult
+                        percent={countPercent()}
+                        unknownTerms={cancel}
+                        unknownTotal={cancel.length}
+                        knownTotal={success.length}
+                        onClick={reload} />
                     :
                     <div>
                         <div>
@@ -182,6 +141,7 @@ const FlashcardPage = () => {
                         <div className={styles.actions}>
                             <div className={styles.buttons}>
                                 <Button
+                                    size="large"
                                     onClick={handleCancel}
                                     style={{ backgroundColor: 'white' }}
                                     icon="pi pi-times"
@@ -191,6 +151,7 @@ const FlashcardPage = () => {
                                     severity="danger"
                                     aria-label="Cancel" />
                                 <Button
+                                    size="large"
                                     onClick={handleSuccess}
                                     style={{ backgroundColor: 'white' }}
                                     icon="pi pi-check"
@@ -203,19 +164,7 @@ const FlashcardPage = () => {
                         </div>
                     </div>
                 }
-            </div>
-        </div >
-    );
-}
-
-const Card = ({ term }) => {
-    return (
-        <div className={styles.term}>
-            <div className={styles.left}>
-                <div className={styles.top}>{term.term}</div>
-                <div className={styles.bottom}>{term.definition}</div>
-            </div>
-            {term.imageUrl && <img height={64} width={64} src={term.imageUrl} />}
+            </LearnContainer>
         </div>
     );
 }

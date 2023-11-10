@@ -10,6 +10,14 @@ import CollectionsPage from "../pages/collections";
 import CollectionPage from "../pages/collection";
 import NotFoundPage from "../pages/not-found";
 import FlashcardPage from "../pages/flashcard";
+import LearnPage from "../pages/learn";
+import { PageLoader } from "../components/page-loader";
+
+const Loader = () => {
+    return (
+        <PageLoader />
+    );
+}
 
 export const router = createHashRouter([
     {
@@ -39,5 +47,10 @@ export const router = createHashRouter([
     {
         path: "/flashcards/:id",
         element: <PrivateRoute component={<FlashcardPage />} />
+    },
+    {
+        path: "/learns/:id",
+        element: <PrivateRoute component={<LearnPage />} />
     }
 ]);
+

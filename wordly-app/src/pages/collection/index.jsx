@@ -14,6 +14,9 @@ import { InputTextarea } from "primereact/inputtextarea";
 import collectionService from "../../services/collectionService";
 import TermCard from "../../components/termin-card";
 import { PageLoader } from "../../components/page-loader";
+import { InputSwitch } from "primereact/inputswitch";
+import { InputNumber } from 'primereact/inputnumber';
+import { useFormik } from 'formik';
 
 const CollectionPage = () => {
     const { id } = useParams();
@@ -27,6 +30,8 @@ const CollectionPage = () => {
     const [isEditLoading, setIsEditLoading] = useState(false);
 
     const [collection, setCollection] = useState({});
+
+    const [isOpenLearn, setIsOpenLearn] = useState(false);
 
     useEffect(() => {
         fetchCollection(id);
@@ -137,11 +142,89 @@ const CollectionPage = () => {
 
     }
 
+    const formik = useFormik({
+        initialValues: {
+            single: true,
+            written: false,
+            match: false,
+            quantity: 20
+        },
+        validate: (data) => {
+            let errors = {};
+
+            return errors;
+        },
+        onSubmit: (data) => {
+            navigate(`/learns/${collection.id}`, {
+                state: {
+                    ...data
+                }
+            })
+
+            formik.resetForm();
+        }
+    });
+
+
     return (
         <div>
             {loading && <PageLoader />}
             <Toast ref={toast} />
             <Menu model={items} popup ref={menuRef} id="popup_menu_left" />
+            <Dialog
+                header="Learn"
+                visible={isOpenLearn}
+                onHide={() => setIsOpenLearn(prev => !prev)}
+                draggable={false}
+            >
+                <form onSubmit={formik.handleSubmit} className="flex flex-column gap-2">
+                    <div className="py-4">
+                        <div className="flex justify-content-between mb-2">
+                            <label className="font-semibold">Single</label>
+                            <InputSwitch
+                                name="single"
+                                checked={formik.values.single}
+                                onChange={(event) => {
+                                    formik.setFieldValue('single', event.value);
+                                }} />
+                        </div>
+                        <div className="flex justify-content-between  mb-2">
+                            <label className="font-semibold">Written</label>
+                            <InputSwitch
+                                name="written"
+                                checked={formik.values.written}
+                                onChange={(event) => {
+                                    formik.setFieldValue('written', event.value);
+                                }} />
+                        </div>
+                        <div className="flex justify-content-between  mb-2">
+                            <label className="font-semibold">Match</label>
+                            <InputSwitch
+                                name="match"
+                                checked={formik.values.match}
+                                onChange={(event) => {
+                                    formik.setFieldValue('match', event.value);
+                                }} />
+                        </div>
+                        <div className="mt-2 flex justify-content-between align-items-center">
+                            <label className="font-semibold">Questions</label>
+                            <InputNumber
+                                name="quantity"
+                                style={{ width: '20%', }}
+                                useGrouping={false}
+                                value={formik.values.quantity}
+                                min={1}
+                                onChange={(event) => formik.setFieldValue('quantity', event.value)} />
+                        </div>
+                    </div>
+                    <div className="flex justify-content-end mt-4">
+                        <Button
+                            disabled={!formik.values.written && !formik.values.single && !formik.values.match}
+                            label="Start test"
+                            type="submit" />
+                    </div>
+                </form>
+            </Dialog>
 
             <Dialog
                 className={styles.modal__container}
@@ -206,7 +289,7 @@ const CollectionPage = () => {
                 <div className="py-2 flex justify-content-between">
                     <div className="flex">
                         <Button label="Flashcards" className="mr-2" onClick={() => navigate(`/flashcards/${collection.id}`)} />
-                        <Button label="Learn" />
+                        <Button label="Learn" onClick={() => setIsOpenLearn(prev => !prev)} />
                     </div>
                     {selectedTerms.length > 0 &&
                         <div className="flex align-items-center">

@@ -54,6 +54,19 @@ const searchCollection = async (model) => {
     return response;
 }
 
+const getTest = async (id, model) => {
+    const response = await api.sendGetRequest(`/collections/${id}/test`, model);
+
+    return response;
+}
+
+const submitTest = async (id, model) => {
+    console.log(model);
+    const response = await api.sendPostRequest(`/collections/${id}/test`, model);
+
+    return response;
+}
+
 
 export default {
     createCollection,
@@ -64,5 +77,7 @@ export default {
     addTermsToCollection,
     deleteTermsFromCollection,
     getCollectionsInfo,
-    searchCollection
+    searchCollection,
+    getTest,
+    submitTest
 }
