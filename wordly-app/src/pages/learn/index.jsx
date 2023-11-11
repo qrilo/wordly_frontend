@@ -282,7 +282,7 @@ const LearnPage = () => {
             {loading && <PageLoader />}
             <div className={styles.header}>
                 <h2>Learn</h2>
-                <Button icon='pi pi-times' onClick={() => navigate(`/collections/${id}`)} />
+                <Button icon='pi pi-times' onClick={() => navigate('/collections')} />
             </div>
             {
                 currentQuestion && currentQuestion.questionType === 'single' &&

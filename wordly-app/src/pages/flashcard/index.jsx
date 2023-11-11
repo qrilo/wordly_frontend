@@ -92,6 +92,13 @@ const FlashcardPage = () => {
         setSuccess([]);
     }
 
+    const speak = (event) => {
+        event.stopPropagation();
+        const message = new SpeechSynthesisUtterance()
+        message.text = currentTerm.term;
+        window.speechSynthesis.speak(message)
+    }
+
     return (
         <div>
             <div>
@@ -124,10 +131,21 @@ const FlashcardPage = () => {
                             <div className={styles.card__container} onClick={handleCardClick}>
                                 <div key={currentTerm.id} className={`${styles.card} ${isFlipped && styles.card__flip}`}>
                                     <div className={styles.card__front}>
-                                        {currentTerm.term}
+                                        <div className={styles.card__front__content}>
+                                            <div className={styles.card__front_speaker}>
+                                                <Button
+                                                    icon='pi pi-volume-up'
+                                                    link
+                                                    onClick={event => speak(event)} />
+                                            </div>
+                                            <div className={styles.front__term}>
+                                                {currentTerm.term}
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className={styles.card__back}>
                                         <div className={styles.card__back_definition}>
+                                            <div className={styles.card__speaker}></div>
                                             <div >
                                                 {currentTerm.definition}
                                             </div>
